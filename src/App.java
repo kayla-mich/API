@@ -14,6 +14,7 @@ public class App {
             //This grabs the link to see you're courses 
             @SuppressWarnings("deprecation")
             URL coursesUrl  = new URL("https://canvas.houstonisd.org/api/v1/courses?enrollment_state=active&include[]=total_scores&include[]=current_grading_period_scores");
+            //request to grab info in the api
             HttpURLConnection conn = (HttpURLConnection) coursesUrl.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Authorization", "Bearer " + accessToken);
@@ -35,7 +36,7 @@ public class App {
                 String courseId = matcher.group(1);
                 String courseName = getCourseName(coursesResponse, courseId);
                 System.out.println("Course: " + courseName);
-
+                //this pulls assignments from the courses 
                 String assignmentsResponse = getAssignmentsResponse(courseId, accessToken);
                 printMissingAssignments(assignmentsResponse);
             }
@@ -43,7 +44,7 @@ public class App {
             e.printStackTrace();
         }
     }
-
+//grabs the course name
     private static String getCourseName(String coursesResponse, String courseId) {
         Pattern courseNamePattern = Pattern.compile("\"id\":" + courseId + ",\"name\":\"([^\"]+)\"");
         Matcher matcher = courseNamePattern.matcher(coursesResponse);
@@ -52,7 +53,7 @@ public class App {
         }
         return null;
     }
-
+//grabs the name of the assignment in the course 
     private static String getAssignmentsResponse(String courseId, String accessToken) throws Exception {
         @SuppressWarnings("deprecation")
         URL assignmentsUrl = new URL("https://canvas.houstonisd.org/api/v1/courses/" + courseId + "/assignments?include[]=submission");
@@ -71,7 +72,7 @@ public class App {
 
         return response.toString();
     }
-
+//this gets the name of the missing assignments 
     private static void printMissingAssignments(String assignmentsResponse) {
         Pattern assignmentNamePattern = Pattern.compile("\"name\":\"([^\"]+)\"");
         Matcher matcher = assignmentNamePattern.matcher(assignmentsResponse);
